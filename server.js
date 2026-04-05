@@ -68,7 +68,6 @@ app.get("/", (req, res) => {
   })
 })
 
-
 // GET ALL TRACKS WITH OPTIONAL FILTERS
 app.get("/tracks", async (req, res) => {
   try {
