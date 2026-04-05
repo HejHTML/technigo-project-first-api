@@ -1,3 +1,4 @@
+import listEndpoints from "express-list-endpoints"
 import fs from "fs"
 import cors from "cors"
 import express from "express"
@@ -63,11 +64,7 @@ mongoose.connection.once("open", async () => {
 // ROUTES
 app.get("/", (req, res) => {
   res.json({
-    message: "Technigo music API",
-    endpoints: {
-      "GET /tracks": "Get all tracks (filter by genre, minBpm, maxBpm, limit)",
-      "GET /tracks/:id": "Get a single track by id"
-    }
+    endpoints: listEndpoints(app)
   })
 })
 
