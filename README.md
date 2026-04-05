@@ -1,14 +1,96 @@
 # First API
 
-Replace this readme with your own information about the project. You can include things like:
+## 📌 Brief description of the assignment
 
-- Brief description of the assignment
-- How you approached the task, what tools and techniques you used, and how you planned it
-- If you had more time, what would be next?
-- How to run the project locally
+This project is a RESTful API built with Node.js, Express, and MongoDB. The goal was to create an API with multiple endpoints that can return both collections of data and single items. The API uses Mongoose to model and interact with a MongoDB database hosted on MongoDB Atlas.
 
-## View it live
-Every project should be deployed somewhere. Be sure to include the link to the deployed project so that the viewer can click around and see what it's all about.
+The API provides information about music tracks, including details such as artist, genre, BPM, and popularity.
+
+---
+
+## 🛠️ How I approached the task
+
+I started by setting up an Express server and creating basic routes. After that, I connected the project to a MongoDB database using Mongoose and created a model for the track data.
+
+I seeded the database with a JSON dataset and built endpoints to:
+
+* Fetch all tracks
+* Fetch a single track by ID
+
+To improve the API, I added query parameters to allow filtering (e.g. by genre and BPM) and limiting results.
+
+### Tools & techniques used:
+
+* Node.js
+* Express
+* MongoDB Atlas
+* Mongoose
+* dotenv for environment variables
+* RESTful API design principles
+
+---
+
+## 🚀 If I had more time
+
+If I had more time, I would:
+
+* Add more advanced filtering and sorting options
+* Implement pagination
+* Add more endpoints (e.g. top tracks, search by artist)
+* Add validation for incoming data
+* Build a frontend to consume the API
+
+---
+
+## ▶️ How to run the project locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/HejHTML/technigo-project-first-api.git
+cd project-first-api
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Create a `.env` file
+
+Add your MongoDB Atlas connection string:
+
+```env
+MONGO_URL=your_mongodb_connection_string
+RESET_DB=true
+```
+
+### 4. Start the server
+
+```bash
+npm start
+```
+
+The server will run on:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 🔗 Endpoints
+
+* `GET /` – API documentation
+* `GET /tracks` – Get all tracks (supports query params: genre, minBpm, maxBpm, limit)
+* `GET /tracks/:id` – Get a single track by ID
+
+---
+
+## 🌍 Live API
+
+(Add your deployed API link here)
 
 
 ## Getting Started with the Project
