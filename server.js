@@ -1,35 +1,117 @@
+import fs from "fs"
 import cors from "cors"
 import express from "express"
 import mongoose from "mongoose"
+import dotenv from "dotenv"
 
-// If you're using one of our datasets, uncomment the appropriate import below
-// to get started!
-// import avocadoSalesData from "./data/avocado-sales.json"
-// import booksData from "./data/books.json"
-// import goldenGlobesData from "./data/golden-globes.json"
-// import netflixData from "./data/netflix-titles.json"
-import topMusicData from "./data/top-music.json"
 
-const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-first-api"
-mongoose.connect(mongoUrl)
-mongoose.Promise = Promise
+dotenv.config()
 
-// Defines the port the app will run on. Defaults to 8080, but can be overridden
-// when starting the server. Example command to overwrite PORT env variable value:
-// PORT=9000 npm start
+const topMusicData = JSON.parse(
+  fs.readFileSync("./data/top-music.json", "utf-8")
+)
+
 const port = process.env.PORT || 8080
 const app = express()
 
-// Add middlewares to enable cors and json body parsing
 app.use(cors())
 app.use(express.json())
 
-// Start defining your routes here
-app.get("/", (req, res) => {
-  res.send("Hello Technigo!")
+const mongoUrl = process.env.MONGO_URL
+
+
+if (!mongoUrl) {
+  console.error("❌ MONGO_URL is missing in your .env file")
+}
+
+mongoose.connect(mongoUrl)
+mongoose.Promise = Promise
+
+// MODEL
+const Track = mongoose.model("Track", {
+  id: Number,
+  trackName: String,
+  artistName: String,
+  genre: String,
+  bpm: Number,
+  energy: Number,
+  danceability: Number,
+  loudness: Number,
+  liveness: Number,
+  valence: Number,
+  length: Number,
+  acousticness: Number,
+  speechiness: Number,
+  popularity: Number
 })
 
-// Start the server
+
+mongoose.connection.once("open", async () => {
+  console.log("Connected to MongoDB")
+
+  if (process.env.RESET_DB) {
+    await Track.deleteMany()
+
+    for (const item of topMusicData) {
+      await Track.create(item)
+    }
+
+    console.log("Database seeded!")
+  }
+})
+
+// ROUTES
+app.get("/", (req, res) => {
+  res.json({
+    message: "Technigo music API",
+    endpoints: {
+      "GET /tracks": "Get all tracks (filter by genre, minBpm, maxBpm, limit)",
+      "GET /tracks/:id": "Get a single track by id"
+    }
+  })
+})
+
+app.get("/tracks", async (req, res) => {
+  try {
+    const { genre, minBpm, maxBpm, limit } = req.query
+
+    const query = {}
+
+    if (genre) {
+      query.genre = genre
+    }
+
+    if (minBpm || maxBpm) {
+      query.bpm = {}
+      if (minBpm) query.bpm.$gte = Number(minBpm)
+      if (maxBpm) query.bpm.$lte = Number(maxBpm)
+    }
+
+    const tracks = await Track.find(query)
+      .limit(Number(limit) || 20)
+
+    res.json(tracks)
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" })
+  }
+})
+
+app.get("/tracks/:id", async (req, res) => {
+  try {
+    const track = await Track.findOne({
+      id: Number(req.params.id)
+    })
+
+    if (!track) {
+      return res.status(404).json({ message: "Not found" })
+    }
+
+    res.json(track)
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" })
+  }
+})
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`)
 })
