@@ -68,6 +68,33 @@ app.get("/", (req, res) => {
   })
 })
 
+// CREATE NEW TRACK
+app.post("/tracks", async (req, res) => {
+  try {
+    const newTrack = await Track.create(req.body)
+    res.status(201).json(newTrack)
+  } catch (error) {
+    res.status(400).json({
+      message: "Could not create track",
+      error: error.message
+    })
+  }
+})
+
+// DELETE TRACK
+app.delete("/tracks/:id", async (req, res) => {
+  try {
+    await Track.deleteOne({ id: Number(req.params.id) })
+    res.json({ message: "Track deleted" })
+  } catch (error) {
+    res.status(500).json({
+      message: "Could not delete track",
+      error: error.message
+    })
+  }
+})
+
+// GET ALL TRACKS WITH OPTIONAL FILTERS
 app.get("/tracks", async (req, res) => {
   try {
     const { genre, minBpm, maxBpm, limit } = req.query
@@ -93,6 +120,7 @@ app.get("/tracks", async (req, res) => {
   }
 })
 
+// GET SINGLE TRACK BY ID
 app.get("/tracks/:id", async (req, res) => {
   try {
     const track = await Track.findOne({
@@ -108,7 +136,7 @@ app.get("/tracks/:id", async (req, res) => {
     res.status(500).json({ error: "Something went wrong" })
   }
 })
-
+// START SERVER  
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`)
 })
